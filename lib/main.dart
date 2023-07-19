@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Notes on the Go'),
     );
   }
 }
@@ -60,14 +60,28 @@ class _MyHomePageState extends State<MyHomePage> {
             future: futureNotes,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
+                // print(snapshot.data)
                 // return Text(snapshot.data!.title);
                 return ListView.builder(
                     itemCount: snapshot.data!.notes.length,
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(snapshot.data!.notes[index].title),
-                        subtitle: Text(snapshot.data!.notes[index].body),
-                        autofocus: true,
+                      return Column(
+                        children: <Widget>[
+                          ListTile(
+                            title: Text(snapshot.data!.notes[index].title,
+                                style: MaterialStateTextStyle.resolveWith(
+                                    (states) => const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20))),
+                            subtitle: Text(snapshot.data!.notes[index].body),
+                            autofocus: true,
+                            isThreeLine: true,
+                            // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5), side: BorderSide(color: Colors.black, width: 1))
+                          ),
+                          // ignore: prefer_const_constructors
+                          Divider(),
+                        ],
                       );
                     });
               } else if (snapshot.hasError) {
@@ -88,9 +102,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-
-
 
 Future<Notes> getNotes() async {
   final response =
