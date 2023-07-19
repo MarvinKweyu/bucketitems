@@ -68,17 +68,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       return Column(
                         children: <Widget>[
                           ListTile(
-                            title: Text(snapshot.data!.notes[index].title,
-                                style: MaterialStateTextStyle.resolveWith(
-                                    (states) => const TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20))),
-                            subtitle: Text(snapshot.data!.notes[index].body),
-                            autofocus: true,
-                            isThreeLine: true,
-                            // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5), side: BorderSide(color: Colors.black, width: 1))
-                          ),
+                              title: Text(snapshot.data!.notes[index].title,
+                                  style: MaterialStateTextStyle.resolveWith(
+                                      (states) => const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20))),
+                              subtitle: Text(snapshot.data!.notes[index].body)),
                           // ignore: prefer_const_constructors
                           Divider(),
                         ],
@@ -93,12 +89,52 @@ class _MyHomePageState extends State<MyHomePage> {
           )),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: _createNote,
+          onPressed: () {
+            // go to the NotePage
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      const NewNotePage(title: 'Create a memory')),
+            );
+          },
           tooltip: 'Take a note',
           child: const Icon(Icons.add),
         ),
       ),
 // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class NotePage extends StatelessWidget {
+  const NotePage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: const Center(
+        child: Text('Note Page'),
+      ),
+    );
+  }
+}
+
+class NewNotePage extends StatelessWidget {
+  const NewNotePage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: const Center(
+        child: Text('New Note Page'),
+      ),
     );
   }
 }
