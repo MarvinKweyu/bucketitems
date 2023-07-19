@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_const
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -162,7 +164,7 @@ class NoteFormState extends State<NoteForm> {
               if (value == null || value.isEmpty) {
                 return 'Please enter some text';
               }
-              return null;
+              return null; // Return null when the input is valid
             },
           ),
           Padding(
