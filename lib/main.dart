@@ -35,14 +35,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late Future<Note> futureNote;
+  late Future<Notes> futureNotes;
 
   // use initState to call getNotes() and assign the result to futureNote
   // change to didChangeDependencies
   @override
   void initState() {
     super.initState();
-    futureNote = getNotes();
+    futureNotes = getNotes();
   }
 
   @override
@@ -51,20 +51,39 @@ class _MyHomePageState extends State<MyHomePage> {
       title: 'Note Taker',
       theme: ThemeData(primarySwatch: Colors.deepOrange),
       home: Scaffold(
-          appBar: AppBar(title: const Text('Note Taker')),
-          body: Center(
-              child: FutureBuilder<Note>(
-            future: futureNote,
+        appBar: AppBar(title: const Text('Note Taker')),
+        body: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Center(
+              child: FutureBuilder<Notes>(
+            future: futureNotes,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return Text(snapshot.data!.title);
+                // return Text(snapshot.data!.title);
+                return ListView.builder(
+                    itemCount: snapshot.data!.notes.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(snapshot.data!.notes[index].title),
+                        subtitle: Text(snapshot.data!.notes[index].body),
+                        autofocus: true,
+                      );
+                    });
               } else if (snapshot.hasError) {
                 return Text('${snapshot.error}');
               }
               // show default spinner by default
               return const CircularProgressIndicator();
             },
-          ))), // This trailing comma makes auto-formatting nicer for build methods.
+          )),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _createNote,
+          tooltip: 'Take a note',
+          child: const Icon(Icons.add),
+        ),
+      ),
+// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
@@ -92,13 +111,32 @@ class Note {
   }
 }
 
-Future<Note> getNotes() async {
+class Notes {
+  final List<Note> notes;
+
+  Notes({
+    required this.notes,
+  });
+
+  factory Notes.fromJson(List<dynamic> json) {
+    List<Note> notes = [];
+    notes = json.map((e) => Note.fromJson(e)).toList();
+    return Notes(notes: notes);
+  }
+}
+
+Future<Notes> getNotes() async {
   final response =
-      await http.get(Uri.parse('https://jsonplaceholder.typicode.com/posts/1'));
+      await http.get(Uri.parse('https://jsonplaceholder.typicode.com/posts'));
 
   if (response.statusCode == 200) {
-    return Note.fromJson(jsonDecode(response.body));
+    print(response.body);
+    return Notes.fromJson(jsonDecode(response.body));
   } else {
     throw Exception('Failed to load note');
   }
+}
+
+_createNote() {
+  print("Create a note");
 }
