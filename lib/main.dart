@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:bucketitems/models/notes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -88,42 +89,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class Note {
-  final int id;
-  final int userId;
-  final String title;
-  final String body;
 
-  Note({
-    required this.id,
-    required this.userId,
-    required this.title,
-    required this.body,
-  });
 
-  factory Note.fromJson(Map<String, dynamic> json) {
-    return Note(
-      id: json['id'],
-      userId: json['userId'],
-      title: json['title'],
-      body: json['body'],
-    );
-  }
-}
-
-class Notes {
-  final List<Note> notes;
-
-  Notes({
-    required this.notes,
-  });
-
-  factory Notes.fromJson(List<dynamic> json) {
-    List<Note> notes = [];
-    notes = json.map((e) => Note.fromJson(e)).toList();
-    return Notes(notes: notes);
-  }
-}
 
 Future<Notes> getNotes() async {
   final response =
