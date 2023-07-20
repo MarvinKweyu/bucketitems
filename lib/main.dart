@@ -151,7 +151,20 @@ class _NotePageState extends State<NotePage> {
           future: futureNote,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return Text(snapshot.data!.title);
+              return Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Text(
+                      snapshot.data!.title,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                    ),
+                    SizedBox(height: 20),
+                    Text(snapshot.data!.body)
+                  ],
+                ),
+              );
             } else if (snapshot.hasError) {
               return Text('${snapshot.error}');
             }
