@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_const
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -67,20 +65,34 @@ class _MyHomePageState extends State<MyHomePage> {
                 return ListView.builder(
                     itemCount: snapshot.data!.notes.length,
                     itemBuilder: (context, index) {
-                      return Column(
-                        children: <Widget>[
-                          ListTile(
-                              title: Text(snapshot.data!.notes[index].title,
-                                  style: MaterialStateTextStyle.resolveWith(
-                                      (states) => const TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20))),
-                              subtitle: Text(snapshot.data!.notes[index].body)),
-                          // ignore: prefer_const_constructors
-                          Divider(),
-                        ],
-                      );
+                      return GestureDetector(
+                          onTap: () {
+                            print("Item at index $index tapped");
+                            // item id
+                            print(snapshot.data!.notes[index].id.toString());
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => NotePage(
+                                        title: 'Note',
+                                        noteId: snapshot.data!.notes[index].id
+                                            .toString())));
+                          },
+                          child: Column(
+                            children: <Widget>[
+                              ListTile(
+                                  title: Text(snapshot.data!.notes[index].title,
+                                      style: MaterialStateTextStyle.resolveWith(
+                                          (states) => const TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20))),
+                                  subtitle:
+                                      Text(snapshot.data!.notes[index].body)),
+                              // ignore: prefer_const_constructors
+                              Divider(),
+                            ],
+                          ));
                     });
               } else if (snapshot.hasError) {
                 return Text('${snapshot.error}');
@@ -110,9 +122,10 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class NotePage extends StatelessWidget {
-  const NotePage({super.key, required this.title});
+  const NotePage({super.key, required this.title, required this.noteId});
 
   final String title;
+  final String noteId;
 
   @override
   Widget build(BuildContext context) {
@@ -134,60 +147,61 @@ class NewNotePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: const NoteForm(),
+      // body: const NoteForm(),
+      body: Text('Note Form'),
     );
   }
 }
 
-class NoteForm extends StatefulWidget {
-  const NoteForm({super.key});
+// class NoteForm extends StatefulWidget {
+//   const NoteForm({super.key});
 
-  @override
-  NoteFormState createState() => NoteFormState();
-}
+//   @override
+//   NoteFormState createState() => NoteFormState();
+// }
 
-class NoteFormState extends State<NoteForm> {
-  // create global key that uniquely identifies the Form widget
-  final _formKey = GlobalKey<FormState>();
+// class NoteFormState extends State<NoteForm> {
+//   // create global key that uniquely identifies the Form widget
+//   final _formKey = GlobalKey<FormState>();
 
-  @override
-  Widget build(BuildContext context) {
-    // build a form widget using _formkey created above
-    return Form(
-      key: _formKey,
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // text fields and elevated button
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null; // Return null when the input is valid
-            },
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: ElevatedButton(
-              onPressed: () {
-                // return true of the form is valid or false otherwise
-                if (_formKey.currentState!.validate()) {
-                  // if the form is valid, display a snackbar
-                  // ToDo: change this to a post request
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Processing Data')),
-                  );
-                }
-              },
-              child: const Text('Submit'),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     // build a form widget using _formkey created above
+//     return Form(
+//       key: _formKey,
+//       child: const Column(
+//         crossAxisAlignment: CrossAxisAlignment.center,
+//         children: [
+//           // text fields and elevated button
+//           TextFormField(
+//             validator: (value) {
+//               if (value == null || value.isEmpty) {
+//                 return 'Please enter some text';
+//               }
+//               return null; // Return null when the input is valid
+//             },
+//           ),
+//           Padding(
+//             padding: EdgeInsets.symmetric(vertical: 16),
+//             child: ElevatedButton(
+//               onPressed: () {
+//                 // return true of the form is valid or false otherwise
+//                 if (_formKey.currentState!.validate()) {
+//                   // if the form is valid, display a snackbar
+//                   // ToDo: change this to a post request
+//                   ScaffoldMessenger.of(context).showSnackBar(
+//                     const SnackBar(content: Text('Processing Data')),
+//                   );
+//                 }
+//               },
+//               child: const Text('Submit'),
+//             ),
+//           )
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 Future<Notes> getNotes() async {
   final response =
