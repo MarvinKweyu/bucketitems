@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:bucketitems/models/notes.dart';
 import 'package:bucketitems/models/note.dart';
+import 'package:bucketitems/pages/note_page.dart';
+import 'package:bucketitems/pages/new_note.dart';
 
 void main() {
   runApp(const MyApp());
@@ -121,142 +123,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class NotePage extends StatefulWidget {
-  const NotePage({super.key, required this.title, required this.noteId});
-
-  final String title;
-  final int noteId;
-
-  @override
-  State<NotePage> createState() => _NotePageState();
-}
-
-class _NotePageState extends State<NotePage> {
-  late Future<Note> futureNote;
-
-  @override
-  void initState() {
-    super.initState();
-    // get the note with the id
-    futureNote = getNote(widget.noteId);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: Center(
-        child: Center(
-            child: FutureBuilder<Note>(
-          future: futureNote,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Text(
-                      snapshot.data!.title,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                    ),
-                    SizedBox(height: 20),
-                    Text(snapshot.data!.body)
-                  ],
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return Text('${snapshot.error}');
-            }
-            // show default spinner by default
-            return const CircularProgressIndicator();
-          },
-        )),
-      ),
-    );
-  }
-}
-
-class NewNotePage extends StatelessWidget {
-  const NewNotePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: const NoteForm(),
-      // body: Text('Note Form'),
-    );
-  }
-}
-
-class NoteForm extends StatefulWidget {
-  const NoteForm({super.key});
-
-  @override
-  NoteFormState createState() => NoteFormState();
-}
-
-class NoteFormState extends State<NoteForm> {
-  // create global key that uniquely identifies the Form widget
-  final _formKey = GlobalKey<FormState>();
-
-  @override
-  Widget build(BuildContext context) {
-    // build a form widget using _formkey created above
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // text fields and elevated button
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: TextFormField(
-              autofillHints: const [AutofillHints.name],
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                return null; // Return null when the input is valid
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                return null; // Return null when the input is valid
-              },
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: ElevatedButton(
-              onPressed: () {
-                // return true of the form is valid or false otherwise
-                if (_formKey.currentState!.validate()) {
-                  // if the form is valid, display a snackbar
-                  // ToDo: change this to a post request
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Processing Data')),
-                  );
-                }
-              },
-              child: const Text('Submit'),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
-
 Future<Notes> getNotes() async {
   final response =
       await http.get(Uri.parse('https://jsonplaceholder.typicode.com/posts'));
@@ -266,19 +132,4 @@ Future<Notes> getNotes() async {
   } else {
     throw Exception('Failed to load note');
   }
-}
-
-Future<Note> getNote(int noteId) async {
-  final response = await http
-      .get(Uri.parse('https://jsonplaceholder.typicode.com/posts/$noteId'));
-
-  if (response.statusCode == 200) {
-    return Note.fromJson(jsonDecode(response.body));
-  } else {
-    throw Exception('Failed to load note');
-  }
-}
-
-_createNote() {
-  print("Create a note");
 }
